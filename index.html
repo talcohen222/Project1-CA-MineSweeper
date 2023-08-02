@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mine Sweeper</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body onload="onInit()">
+  <h1>Mine Sweeper</h1>
+  <div class="modal">
+    <p class="live-left"><span class="live-left-num">1</span> LIVE LEFT</p>
+    <p class="state">😄</p>
+  </div>
+  <div class="level">
+    <button class="beginner" onclick="updateLevel(this)">Beginner</button>
+    <button class="medium" onclick="updateLevel(this)">Medium</button>
+    <button class="expert" onclick="updateLevel(this)">Expert</button>
+  </div>
+  <table class="board">
+    <tbody class="board-cells">
+    </tbody>
+  </table>
+
+
+  <script src="js/main.js"></script>
+  <script src="js/utils.js"></script>
+</body>
+
+</html>
