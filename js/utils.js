@@ -7,11 +7,10 @@ function buildBoard(size) { // Builds the board , Set the mines , Call setMinesN
     board[i] = [];
     for (var j = 0; j < size; j++) {
       var isMine = false
-      // if (i === 1 && j === 1 || i === size - 2 && j === size - 2) {
-      //   isMine = true
-      // }
+      // if (i === 3 && j === 1 || i === size - 3 && j === size - 2) isMine = true
+
       board[i][j] = {
-        minesAroundCount: EMPTY, ////////////////////////////////// ****************** Call setMinesNegsCount()
+        minesAroundCount: EMPTY,
         isShown: false,
         isMine: isMine,
         isMarked: false
@@ -37,7 +36,6 @@ function renderBoard(board) { // Render the board as a <table> to the page
       const isMarked = board[i][j].isMarked
 
       if (isShown) {
-        // if (isMine) cellContent = isMarked ? MARKED : MINE
         if (isMine) cellContent = MINE
         else cellContent = minesAroundCount
       }
@@ -79,108 +77,7 @@ function getRandomIntInclusive(min, max) {
 }
 
 
-//----------------------------------------------------------------------------//
-
-
-function createMat(rowIdx, colIdx) {
-  const mat = [];
-  for (var i = 0; i < rowIdx; i++) {
-    const row = [];
-    for (var j = 0; j < colIdx; j++) {
-      row.push("♻️");
-    }
-    mat.push(row);
-  }
-  return mat;
-}
-
-function getEmptyCells(board) {
-  var emptyCells = [];
-  for (var i = 0; i < board.length; i++) {
-    for (var j = 0; j < board[0].length; j++) {
-      const currCell = board[i][j];
-      if (currCell.type === FLOOR && currCell.gameElement === null)
-        emptyCells.push({ i, j });
-    }
-  }
-  if (!emptyCells.length) return null;
-  return emptyCells;
-}
-
-
-//-----------------Rendering-------------//
-
-// --> Renders into an already made board in the HTML
-
-
-// location such as: {i: 2, j: 7}
-function renderCell(location, value) {
-  // Select the elCell and set the value
-  const elCell = document.querySelector(`.cell-${location.i}-${location.j}`);
-  elCell.innerHTML = value;
-}
-
-
-//-----------------Randoms-------------//
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min);
-  // The maximum is exclusive and the minimum is inclusive
-}
-
-function getRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
-
-//--------------extra shit and sheet--------------//
-
-function makeId(length = 6) {
-  var txt = "";
-  var possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < length; i++) {
-    txt += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return txt;
-}
-
-function handleModal() {
-  gElModal.classList.toggle("hidden");
-  /* <div class='modal hidden'>modal</div> */
-}
-
 function playSound() {
-  const audio = new Audio("filename.type");
+  const audio = new Audio("1.wav");
   audio.play();
-}
-
-function onHandleKey(event) {
-  const i = gGamerPos.i;
-  const j = gGamerPos.j;
-  switch (event.key) {
-    case "ArrowLeft":
-    case "a":
-      moveTo(i, j - 1);
-      break;
-    case "ArrowRight":
-    case "d":
-      moveTo(i, j + 1);
-      break;
-    case "ArrowUp":
-    case "w":
-      moveTo(i - 1, j);
-      break;
-    case "ArrowDown":
-    case "s":
-      moveTo(i + 1, j);
-      break;
-  }
 }
