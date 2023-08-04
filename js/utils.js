@@ -46,7 +46,7 @@ function renderBoard(board) { // Render the board as a <table> to the page
 
       const tdId = 'cell-' + i + '-' + j
       strHTML += `\t<td id=${tdId} class="cell ${classNameForOpen} ${classNameForMines}" oncontextmenu="javascript:onCellMarked(this);return false;"
-          onclick="onCellClicked(this, ${i}, ${j})">${cellContent}</td>\n` //<td class="cell cell-i-j">${cellContent}</td>
+          onclick="onCellClicked(this, ${i}, ${j})">${cellContent}</td>\n` 
     }
     strHTML += '</tr>'
   }

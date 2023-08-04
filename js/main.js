@@ -13,9 +13,10 @@ var gSize = 4
 var gMines = 2
 var gLivesLeft
 var gCount
-var secsPassed
+// var secsPassed
 var gTimerIntervalID
 var gSafeClicks
+var gMin
 var gSeconds
 var gThousandth
 var gLevelName = 'Beginner'
@@ -52,8 +53,7 @@ function onInit() { //This is called when page loads
 
     changeInnerText('.left-mines', gLevel.MINES)
     clearInterval(gTimerIntervalID)
-    changeInnerText('.timer-second', '0.')
-    changeInnerText('.timer-thousand', '000')
+    changeInnerText('.timer', '0:00:00')
 
     gBoard = buildBoard(gLevel.SIZE)
     renderBoard(gBoard)
@@ -62,20 +62,16 @@ function onInit() { //This is called when page loads
 
 function onCellClicked(elCell, i, j) { //Called when a cell is clicked
     if (gIsFirstMove) gGame.isOn = true
-    if (!gGame.isOn) return
-    if (gBoard[i][j].isMarked) return
-    if (gBoard[i][j].isShown) return
+    if (!gGame.isOn || gBoard[i][j].isMarked || gBoard[i][j].isShown) return
     if (gBoard[i][j].isMine) {
         updateLiveLeft()
         playSound()
     }
-
     if (gIsFirstMove) {
+        startTimer()
         placeRandomMines(i, j)
         expandShown(gBoard, elCell, i, j) //model
         gIsFirstMove = false
-        var startTime = Date.now()
-        gTimerIntervalID = setInterval(showTimer, 37, startTime)
     }
     else {
         var minesAround = setMinesNegsCount(gBoard, i, j)
@@ -92,8 +88,7 @@ function onCellClicked(elCell, i, j) { //Called when a cell is clicked
 
 function onCellMarked(elCell) { // Called when a cell is rightclicked.  See how you can hide the context menu on right click
 
-    if (gIsFirstMove) return
-    if (!gGame.isOn) return
+    if (gIsFirstMove || !gGame.isOn) return
 
     var row = getLocation(elCell.id).i
     var col = getLocation(elCell.id).j
@@ -102,7 +97,6 @@ function onCellMarked(elCell) { // Called when a cell is rightclicked.  See how 
 
     if (gBoard[row][col].isMarked) gLevel.MINES++
     else gLevel.MINES--
-
 
     gBoard[row][col].isMarked = !gBoard[row][col].isMarked //remove or add the flag
 
@@ -124,7 +118,6 @@ function checkGameOver() { // Game ends when all mines are marked, and all the o
             }
         }
     }
-
     if (win) {
         changeInnerText('.state', '😎')
         updateBestScores()
@@ -215,13 +208,14 @@ function showTimer(startTime) {
 
     var now = Date.now()
     gTimeleft = now - startTime;
-    gSeconds = Math.floor((gTimeleft % (1000 * 60)) / 1000);
+
+    gMin = String(new Date(gTimeleft).getMinutes()).padStart(2, '0')
+    gSeconds = String(Math.floor((gTimeleft % (1000 * 60)) / 1000)).padStart(2, '0');
     gThousandth = Math.floor((gTimeleft % (1000)));
 
-    changeInnerText('.timer-second', gSeconds + '.')
-    changeInnerText('.timer-thousand', gThousandth)
+    changeInnerText('.timer', gMin + ':' + gSeconds + ':' + gThousandth)
 
-    gGame.secsPassed = gSeconds + "." + gThousandth
+    gGame.secsPassed = gMin + ':' + gSeconds + ':' + gThousandth
 }
 
 
@@ -231,6 +225,19 @@ function getSafeCell() {
         alert("You have already used all the safe clicks")
         return
     }
+    var safeCells = getSafeCells()
+
+    if (safeCells.length === 0) {
+        alert("There are no safe clicks at this point")
+        return
+    }
+    showSafeCell(safeCells)
+    gSafeClicks--
+    changeInnerText('.safe-clicks-left', gSafeClicks)
+}
+
+
+function getSafeCells() {
     var safeCells = []
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[0].length; j++) {
@@ -238,10 +245,11 @@ function getSafeCell() {
             if (!cell.isShown && !cell.isMarked && !cell.isMine) safeCells.push({ i, j })
         }
     }
-    if (safeCells.length === 0) {
-        alert("There are no safe clicks at this point")
-        return
-    }
+    return safeCells
+}
+
+
+function showSafeCell(safeCells) {
     var randIdx = getRandomIntInclusive(0, safeCells.length - 1)
     var safeCell = safeCells[randIdx]
     var elCell = document.getElementById('cell-' + safeCell.i + '-' + safeCell.j)
@@ -250,9 +258,6 @@ function getSafeCell() {
     setTimeout(() => {
         elCell.classList.remove('show-safe-click')
     }, 1000);
-
-    gSafeClicks--
-    changeInnerText('.safe-clicks-left', gSafeClicks)
 }
 
 
@@ -271,16 +276,18 @@ function updateBestScores() {
 function updateScoresDisplay() {
     var storageScore = localStorage.getItem(gLevelName)
     var score = (storageScore === null) ? 0 : gTimeleft
-
     var str
-    if (score === 0) {
-        str = gLevelName + ' best score: 0.000'
-        changeInnerText('.best-scores', str)
-    }
-    else if (score <= storageScore) {
-        str = gLevelName + ' best score: ' + gSeconds + '.' + gThousandth
-        changeInnerText('.best-scores', str)
-    }
+
+    if (score === 0) str = gLevelName + ' best score: 00:00:000' //if nothing is stored
+    else if (score <= storageScore) str = gLevelName + ' best score: ' + gMin + ':' + gSeconds + ':' + gThousandth //if better score
+    else str = gLevelName + ' best score: ' + new Date(storageScore).getMinutes() + parseInt((+storageScore) / 1000) + ':' + (+storageScore) % 1000 //if not better score- display the storage score
+
+    changeInnerText('.best-scores', str)
+}
+
+function startTimer() {
+    var startTime = Date.now()
+    gTimerIntervalID = setInterval(showTimer, 37, startTime)
 }
 
 
@@ -339,3 +346,5 @@ function changeInnerText(selector, value) {
 //         }
 //     }
 // }
+
+

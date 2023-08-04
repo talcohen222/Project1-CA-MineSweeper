@@ -91,10 +91,6 @@ footer{
     width: 130px;
 }
 
-.timer-second , .timer-thousand{
-    color: red;
-}
-
 .left-mines{
     width: 40px;
 }
@@ -122,12 +118,4 @@ footer{
 
 .best-scores{
     color: white;
-}
-
-.hidden{
-    display: none;
-}
-
-.show{
-    display: block;
 }
