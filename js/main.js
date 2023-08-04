@@ -211,7 +211,7 @@ function showTimer(startTime) {
 
     gMin = String(new Date(gTimeleft).getMinutes()).padStart(2, '0')
     gSeconds = String(Math.floor((gTimeleft % (1000 * 60)) / 1000)).padStart(2, '0');
-    gThousandth = Math.floor((gTimeleft % (1000)));
+    gThousandth = String(Math.floor((gTimeleft % (1000)))).padStart(3, '0');
 
     changeInnerText('.timer', gMin + ':' + gSeconds + ':' + gThousandth)
 
