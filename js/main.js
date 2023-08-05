@@ -424,7 +424,7 @@ function getArea() {
 }
 
 function getDarkMode() {
-    document.querySelector('.all').style.backgroundColor = gIsDarkMode ? '#ffffff' : '#000000'
+    document.querySelector('.all').style.backgroundColor = gIsDarkMode ? '#000000' : '#ffffff' 
     gIsDarkMode = !gIsDarkMode
 }
 
@@ -512,26 +512,4 @@ function showHint(rowIdx, colIdx) {
         gIsHintMode = false
     }, 1500);
 }
-
-
-
-// function expandShown(board, elCell, rowIdx, colIdx) { // Open cells around the clicked cell
-
-//     if (board[rowIdx][colIdx].isMine) { //if mine- will not open cells around
-//         gBoard[rowIdx][colIdx].isShown = true
-//         return
-//     }
-//     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-//         if (i < 0 || i >= board.length) continue;
-//         for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-//             if (j < 0 || j >= board[0].length) continue;
-//             if (!board[i][j].isMine) {
-//                 var minesAroundCount = setMinesNegsCount(board, i, j)
-//                 board[i][j].minesAroundCount = (minesAroundCount === 0) ? EMPTY : minesAroundCount
-//                 board[i][j].isShown = true
-//             }
-//         }
-//     }
-// }
-
 
