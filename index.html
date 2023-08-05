@@ -10,32 +10,66 @@
 </head>
 
 <body onload="onInit()">
+  <div class="all">
+    <h1>Mine Sweeper</h1>
 
-  <h1>Mine Sweeper</h1>
-
-  <div class="modal">
-    <p class="live-left">
-      <span class="live-left-num">1</span> LIVE LEFT
+    <div class="live-left">
+      <span class="live-left-num">1</span> LIVE LEFT <br>
       <span class="timer"></span><span class="left-mines">2</span>
-    </p>
-    <button class="safe-click" onclick="getSafeCell()">Safe Click</button>
-    <div class="avail-click"><span class="safe-clicks-left">3</span> clicks available</div>
-    <span class="state" onclick="onInit()">😄</span>
-  </div>
+    </div>
 
-  <div class="level">
-    <button class="beginner" onclick="updateLevel('Beginner')">Beginner</button>
-    <button class="medium" onclick="updateLevel('Medium')">Medium</button>
-    <button class="expert" onclick="updateLevel('Expert')">Expert</button>
-  </div>
+    <div class="modal">
 
-  <div class="best-scores"><span class="score"></span>
-  </div>
+      <div>
+        <p class="light-hint"><span class="light1" onclick="getHint(this)">💡</span><span class="light2" onclick="getHint(this)">💡</span><span class="light3" onclick="getHint(this)">💡</span></p>
+      </div>
 
-  <table class="board">
-    <tbody class="board-cells">
-    </tbody>
-  </table>
+      <div class="more-feature">
+
+        <div class="inline-div">
+          <button class="undo-click" onclick="getOneStepBack()" title="One step back">Undo</button>
+        </div>
+
+        <div class="inline-div">
+          <button class="safe-click" onclick="getSafeCell()" title="A cell without a mine is revealed">Safe Click</button>
+          <p class="avail-click"><span class="safe-clicks-left">3</span> clicks available</p>
+        </div>
+
+        <div class="inline-div">
+          <button class="mega-hint" onclick="getArea()" title="The contents of all cells between the 2 selected cells will be revealed">Mega Hint</button>
+          <p class="hine-desc">Choose 2 cells</p>
+        </div>
+
+        <div class="inline-div">
+          <button class="manually-positioned" onclick="startPositMines()" title="Allows you to place the mines before the game starts">Positioned mines</button>
+          <p class="pos-mines-state">You left <span class="mines-to-posit"></span> Mines</p>
+        </div>
+
+        <div class="inline-div">
+          <button class="dark-mode" onclick="getDarkMode()">Dark Mode</button>
+        </div>
+
+      </div>
+
+      <br>
+      <div class="state" onclick="onInit()">😄</div>
+
+    </div>
+
+    <div class="level">
+      <button class="beginner" onclick="updateLevel('Beginner')">Beginner</button>
+      <button class="medium" onclick="updateLevel('Medium')">Medium</button>
+      <button class="expert" onclick="updateLevel('Expert')">Expert</button>
+    </div>
+
+    <div class="best-scores"><span class="score"></span>
+    </div>
+
+    <table class="board">
+      <tbody class="board-cells">
+      </tbody>
+    </table>
+  </div>
 
   <footer>Project 1 Coding Academy | Mine Sweepr | Tal Cohen</footer>
 

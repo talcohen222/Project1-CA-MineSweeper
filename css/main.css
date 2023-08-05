@@ -1,14 +1,26 @@
 body{
-    background-color: black;
+    background-color: rgb(122, 122, 122);
     text-align: center;
+    transition: background-color 500ms
+}
+
+.all{
+    margin: 30px auto 0px;
+    padding-bottom: 5px;
+    background-color: #ffffff;
+    width: 1000px;
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 20px;
+    box-shadow: 5px 5px 16px 2px #000000;
+    transition: background-color 500ms
 }
 
 h1{
-    color: #fed2d2;
+    color: #d5a5a5;
     padding: 15px;
     font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 50px;
-    margin: 0px;
+    margin: 10px 0px 0px;
 }
 
 .board{
@@ -19,15 +31,17 @@ td{
     height: 39px;
     width: 39px;
     border: 1px solid black;
+    
 }
 
 .cell{
     text-align: center;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 18px;
-    background: linear-gradient(to top, #fed2d2, #ffbcbc, #ffa8a8);
-    /* border-radius: 3px; */
+    background-color: #ffbcbc;
+    border-radius: 3px;
     cursor: pointer;
+    border: 4px outset #ffa8a8;
 }
 
 .opened-cell{
@@ -35,7 +49,8 @@ td{
 }
 
 .mine-cell{
-    background: linear-gradient(to top, #ff0000, #ff0000);
+    border: 3px outset rgb(0, 0, 0);
+    background: linear-gradient(to top, #3b3b3b, #000000, #3b3b3b);
 }
 
 .level{
@@ -45,77 +60,111 @@ td{
 }
 
 .level *{
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     padding: 7px;
-    font-size: 20px;
-    background: linear-gradient(to top, #c98da0, #b3f3fc, #c98da0);
-    border: 5px solid #603e3e;
+    font-size: 23px;
+    background-color: #323232;
+    border: 1px solid #e2e2e2;
+    color: white;
     cursor: pointer;
+    width: 130px;
 }
 
 .live-left{
+    font-weight: bold;
+    font-size: 22px;
+    padding: 15px 0px 0px;
     font-family: Arial, Helvetica, sans-serif;
     color: red;
     margin: 0px;
 }
 
 .modal{
-    /* float: left; */
     font-weight: bold;
-    font-size: 30px;
-    
+    font-size: 30px;   
 }
 
 .state{
-    /* background-color: rgb(104, 104, 104); */
-    width: 0px;
-    margin-bottom: 50px;
+    margin: auto;
     cursor: pointer;
 }
 
 footer{
+    width: 700px;
     color: white;
     font-size: 20px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    padding-top: 30px;
+    margin: 20px auto 0px;
 }
 
 .timer, .left-mines{
     display: inline-block;
     padding: 7px;
     border: 1px solid red;
-    height: 33px;
+    height: 23px;
 }
 
 .timer{
     margin-left: 15px;
-    width: 150px;
+    width: 130px;
 }
 
 .left-mines{
     width: 40px;
 }
 
-.safe-click{
+.safe-click , .undo-click, .mega-hint, .manually-positioned, .dark-mode{
     font-size: 22px;
-    background-color: lightblue;
+    background-color: rgb(159, 199, 212);
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     margin-top: 10px;
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
+    width: 140px;
+    height: 70px;
+    border: 2px solid black;
 }
 
-.avail-click{
-    color: lightblue;
+.avail-click , .hine-desc, .pos-mines-state{
+    color: rgb(107, 141, 153);
     font-family:Arial, Helvetica, sans-serif;
     font-size: 17px;
-    margin-bottom: 10px;
+    margin: 5px 0px 0px;
 }
 
 .show-safe-click{
-    background: linear-gradient(to top, #7eceff, #ffffff);
+    background: linear-gradient(to top, #bfe6ff, #ffffff);
+    border: 4px outset rgb(255, 255, 255);
 }
 
 .best-scores{
     color: white;
+}
+
+.inline-div{
+    display:inline-block;
+    height: 100px;
+}
+
+.undo-click{
+    float: left;
+}
+
+.dark-mode{
+    float: right;
+}
+
+.posit-mine{
+    border: 3px outset rgb(0, 0, 0);
+    background: linear-gradient(to top, #3b3b3b, #000000, #3b3b3b);
+}
+
+.light-hint *{
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.light-opacity{
+    opacity: 0.5;
 }

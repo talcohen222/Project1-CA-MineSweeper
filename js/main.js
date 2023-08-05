@@ -13,7 +13,6 @@ var gSize = 4
 var gMines = 2
 var gLivesLeft
 var gCount
-// var secsPassed
 var gTimerIntervalID
 var gSafeClicks
 var gMin
@@ -21,19 +20,38 @@ var gSeconds
 var gThousandth
 var gLevelName = 'Beginner'
 var gTimeleft
-
+var GgameHistory
+var gIsMegaHint
+var gCellsClickedForMega
+var gIsUserPositMines
+var gTempMines
+var gisUserPlacedMines
+var gIsDarkMode
+var gIsHintMode
 
 function onInit() { //This is called when page loads 
     // localStorage.clear()
 
     gBoard = []
+    GgameHistory = []
     gCount = 0
     gLivesLeft = 3
     gIsFirstMove = true
     gSafeClicks = 3
+    gIsMegaHint = false
+    gCellsClickedForMega = []
+    gIsUserPositMines = false
+    gisUserPlacedMines = false
+    gTempMines = gMines
+    gIsDarkMode = false
+    gIsHintMode = false
     changeInnerText('.live-left-num', gLivesLeft)
     changeInnerText('.state', '😄')
     changeInnerText('.safe-clicks-left', 3)
+    changeInnerText('.mines-to-posit', gMines)
+    document.querySelector('.light1').classList.remove('light-opacity')
+    document.querySelector('.light2').classList.remove('light-opacity')
+    document.querySelector('.light3').classList.remove('light-opacity')
 
 
     gLevel = {
@@ -46,7 +64,6 @@ function onInit() { //This is called when page loads
         shownCount: 0,
         markedCount: 0,
         secsPassed: 0
-
     }
 
     updateScoresDisplay()
@@ -57,19 +74,49 @@ function onInit() { //This is called when page loads
 
     gBoard = buildBoard(gLevel.SIZE)
     renderBoard(gBoard)
+
 }
 
 
 function onCellClicked(elCell, i, j) { //Called when a cell is clicked
     if (gIsFirstMove) gGame.isOn = true
+
+    if (gIsMegaHint && gGame.isOn && !gIsFirstMove && !gIsHintMode) { //Mega hint
+        gCellsClickedForMega.push({ i, j })
+        if (gCellsClickedForMega.length === 2) {
+            getMegaHint(gCellsClickedForMega)
+            gIsMegaHint = false
+        }
+        return
+    }
+
+    if (gIsHintMode && !gIsMegaHint && !gIsFirstMove) {//hint
+        showHint(i, j)
+        return
+    }
+
+    if (gIsUserPositMines && gGame.isOn) { //user positioned mines
+        elCell.classList.add('posit-mine')
+        if (gBoard[i][j].isMine) return
+        gBoard[i][j].isMine = true
+        if (gTempMines === 1) {
+            gIsUserPositMines = false
+            renderBoard(gBoard)
+        }
+        gTempMines--
+        changeInnerText('.mines-to-posit', gTempMines)
+        return
+    }
+
     if (!gGame.isOn || gBoard[i][j].isMarked || gBoard[i][j].isShown) return
-    if (gBoard[i][j].isMine) {
+
+    if (gBoard[i][j].isMine && !gIsUserPositMines) {
         updateLiveLeft()
         playSound()
     }
-    if (gIsFirstMove) {
+    if (gIsFirstMove && !gIsUserPositMines) {
         startTimer()
-        placeRandomMines(i, j)
+        if (!gisUserPlacedMines) placeRandomMines(i, j)
         expandShown(gBoard, elCell, i, j) //model
         gIsFirstMove = false
     }
@@ -81,6 +128,10 @@ function onCellClicked(elCell, i, j) { //Called when a cell is clicked
             gBoard[i][j].minesAroundCount = minesAround //model
         }
     }
+
+    var boardCopy = deepCopy(gBoard)
+    GgameHistory.push({ board: boardCopy, liveLeft: gLivesLeft, marked: gLevel.MINES })
+
     renderBoard(gBoard) //DOM
     checkGameOver()
 }
@@ -101,8 +152,29 @@ function onCellMarked(elCell) { // Called when a cell is rightclicked.  See how 
     gBoard[row][col].isMarked = !gBoard[row][col].isMarked //remove or add the flag
 
     changeInnerText('.left-mines', gLevel.MINES)
+
+    var boardCopy = deepCopy(gBoard)
+    GgameHistory.push({ board: boardCopy, liveLeft: gLivesLeft, marked: gLevel.MINES })
+
     renderBoard(gBoard)
     checkGameOver()
+}
+
+
+function deepCopy(board) {
+    var boardCopy = []
+    for (var i = 0; i < board.length; i++) {
+        boardCopy[i] = []
+        for (var j = 0; j < board[0].length; j++) {
+            boardCopy[i][j] = {
+                minesAroundCount: board[i][j].minesAroundCount,
+                isShown: board[i][j].isShown,
+                isMine: board[i][j].isMine,
+                isMarked: board[i][j].isMarked
+            }
+        }
+    }
+    return boardCopy
 }
 
 
@@ -178,8 +250,10 @@ function placeRandomMines(row, col) {
 
 
 function updateLiveLeft() {
+    gLevel.MINES--
     gLivesLeft--
     changeInnerText('.live-left-num', gLivesLeft)
+    changeInnerText('.left-mines', gLevel.MINES)
     if (gLivesLeft === 0) {
         changeInnerText('.state', '😖')
         showAllMines(gBoard)
@@ -285,6 +359,22 @@ function updateScoresDisplay() {
     changeInnerText('.best-scores', str)
 }
 
+
+function getOneStepBack() {
+
+    if (!gGame.isOn || GgameHistory.length === 1) return
+
+    GgameHistory.pop()
+
+    var lastStep = GgameHistory[GgameHistory.length - 1]
+    gLivesLeft = lastStep.liveLeft //MODEL
+    gLevel.MINES = lastStep.marked
+    gBoard = lastStep.board
+    renderBoard(gBoard) //DOM
+    changeInnerText('.live-left-num', gLivesLeft)
+    changeInnerText('.left-mines', gLevel.MINES)
+}
+
 function startTimer() {
     var startTime = Date.now()
     gTimerIntervalID = setInterval(showTimer, 37, startTime)
@@ -326,6 +416,103 @@ function getLocation(id) {
 function changeInnerText(selector, value) {
     document.querySelector(selector).innerText = value
 }
+
+
+function getArea() {
+    if (gCellsClickedForMega.length < 2 && !gIsFirstMove) gIsMegaHint = true
+    if (!gIsFirstMove && !gIsMegaHint) alert("You can use mega hint only once")
+}
+
+function getDarkMode() {
+    document.querySelector('.all').style.backgroundColor = gIsDarkMode ? '#ffffff' : '#000000'
+    gIsDarkMode = !gIsDarkMode
+}
+
+
+function getMegaHint(cellsClickedForMega) {
+
+    var row1 = cellsClickedForMega[0].i
+    var col1 = cellsClickedForMega[0].j
+    var row2 = cellsClickedForMega[1].i
+    var col2 = cellsClickedForMega[1].j
+
+    var startRow = (row1 < row2) ? row1 : row2
+    var endRow = (row1 < row2) ? row2 : row1
+    var startCol = (col1 < col2) ? col1 : col2
+    var endCol = (col1 < col2) ? col2 : col1
+
+    var openedCells = []
+    var boardWithHint = deepCopy(gBoard)
+    for (var i = startRow; i <= endRow; i++) {
+        for (var j = startCol; j <= endCol; j++) {
+            boardWithHint[i][j].isShown = true
+            boardWithHint[i][j].minesAroundCount = setMinesNegsCount(boardWithHint, i, j)
+            openedCells.push({ i, j })
+        }
+    }
+    renderBoard(boardWithHint)
+
+    for (var t = 0; t < openedCells.length; t++) {
+        var tdId = 'cell-' + openedCells[t].i + '-' + openedCells[t].j
+        document.getElementById(tdId).classList.add('show-safe-click')
+    }
+
+    setTimeout(() => {
+        renderBoard(gBoard)
+    }, 2000);
+}
+
+
+function startPositMines() {
+    changeInnerText('.mines-to-posit', gLevel.MINES)
+    if (!gIsFirstMove) {
+        alert('You can positioned mines only on first move')
+        return
+    }
+    else {
+        gIsUserPositMines = true
+        gisUserPlacedMines = true
+    }
+}
+
+
+function getHint(elLight) {
+
+    if (elLight.classList.contains('light-opacity')) return
+    if (!gGame.isOn || gIsHintMode) return
+
+    elLight.classList.add('light-opacity')
+    gIsHintMode = true
+}
+
+
+function showHint(rowIdx, colIdx) {
+    var boardCopy = deepCopy(gBoard)
+    var openedCells = []
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= boardCopy.length) continue;
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j >= boardCopy[0].length) continue;
+            openedCells.push({ i, j })
+            boardCopy[i][j].isShown = true
+           
+            var neighbors = setMinesNegsCount(boardCopy, i, j)
+            if (!boardCopy[i][j].isMine) boardCopy[i][j].minesAroundCount = neighbors
+        }
+    }
+
+    renderBoard(boardCopy)
+    for (var t = 0; t < openedCells.length; t++) {
+        var tdId = 'cell-' + openedCells[t].i + '-' + openedCells[t].j
+        document.getElementById(tdId).classList.add('show-safe-click')
+    }
+
+    setTimeout(() => {
+        renderBoard(gBoard)
+        gIsHintMode = false
+    }, 1500);
+}
+
 
 
 // function expandShown(board, elCell, rowIdx, colIdx) { // Open cells around the clicked cell
