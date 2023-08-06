@@ -425,6 +425,7 @@ function getArea() {
 
 function getDarkMode() {
     document.querySelector('.all').style.backgroundColor = gIsDarkMode ? '#000000' : '#ffffff' 
+    document.querySelector('.best-scores').style.color = gIsDarkMode ? '#ffffff' : '#000000' 
     gIsDarkMode = !gIsDarkMode
 }
 
